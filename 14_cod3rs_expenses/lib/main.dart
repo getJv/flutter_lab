@@ -1,5 +1,6 @@
 import 'package:cod3rs_expenses/components/chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'components/transaction_form.dart';
 import 'components/transaction_list.dart';
 import 'transaction.dart';
@@ -9,6 +10,11 @@ main() => runApp(ExpensesApp());
 class ExpensesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //Garante que a aplicação não vá para landscape
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    // ]);
+
     return MaterialApp(
       home: MyHomePage(),
       theme: ThemeData(
@@ -95,26 +101,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Despesas pessoais'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _openTransactionFormModal(context),
-          )
-        ],
+    final appBar = AppBar(
+      title: Text(
+        'Despesas pessoais',
+        // Importante para manter a proporção do texto conforme a configuraão do usuário.
+        style: TextStyle(fontSize: 20 * MediaQuery.of(context).textScaleFactor),
       ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _openTransactionFormModal(context),
+        )
+      ],
+    );
+
+    final availiableHeight = MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Chart(
-              recentTransactions: _recentTransactions,
+            Container(
+              height: availiableHeight * 0.3,
+              child: Chart(
+                recentTransactions: _recentTransactions,
+              ),
             ),
-            TransactionList(
-              transactions: _transactions,
-              onRemove: _deleteTransaction,
+            Container(
+              height: availiableHeight * 0.7,
+              child: TransactionList(
+                transactions: _transactions,
+                onRemove: _deleteTransaction,
+              ),
             ),
           ],
         ),
