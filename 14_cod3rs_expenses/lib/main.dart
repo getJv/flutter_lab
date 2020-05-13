@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cod3rs_expenses/components/chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,9 +13,9 @@ class ExpensesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //Garante que a aplicação não vá para landscape
-    // SystemChrome.setPreferredOrientations([
-    //   DeviceOrientation.portraitUp,
-    // ]);
+    /* SystemChrome.setPreferredOrientations([
+       DeviceOrientation.portraitUp,
+     ]); */
 
     return MaterialApp(
       home: MyHomePage(),
@@ -53,6 +55,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [];
+
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return _transactions.where((tr) {
@@ -101,13 +105,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
+    bool _isLandscape = mediaQuery.orientation == Orientation.landscape;
+
     final appBar = AppBar(
       title: Text(
         'Despesas pessoais',
         // Importante para manter a proporção do texto conforme a configuraão do usuário.
-        style: TextStyle(fontSize: 20 * MediaQuery.of(context).textScaleFactor),
+        style: TextStyle(fontSize: 20 * mediaQuery.textScaleFactor),
       ),
       actions: <Widget>[
+        if (_isLandscape)
+          IconButton(
+            icon: Icon(_showChart ? Icons.list : Icons.pie_chart),
+            onPressed: () {
+              setState(() {
+                _showChart = !_showChart;
+              });
+            },
+          ),
         IconButton(
           icon: Icon(Icons.add),
           onPressed: () => _openTransactionFormModal(context),
@@ -115,9 +132,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
 
-    final availiableHeight = MediaQuery.of(context).size.height -
+    final availiableHeight = mediaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+        mediaQuery.padding.top;
 
     return Scaffold(
       appBar: appBar,
@@ -125,26 +142,30 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              height: availiableHeight * 0.3,
-              child: Chart(
-                recentTransactions: _recentTransactions,
+            if (_showChart || !_isLandscape)
+              Container(
+                height: availiableHeight * (_isLandscape ? 0.7 : 0.3),
+                child: Chart(
+                  recentTransactions: _recentTransactions,
+                ),
               ),
-            ),
-            Container(
-              height: availiableHeight * 0.7,
-              child: TransactionList(
-                transactions: _transactions,
-                onRemove: _deleteTransaction,
+            if (!_showChart || !_isLandscape)
+              Container(
+                height: availiableHeight * (_isLandscape ? 1 : 0.3),
+                child: TransactionList(
+                  transactions: _transactions,
+                  onRemove: _deleteTransaction,
+                ),
               ),
-            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _openTransactionFormModal(context),
-      ),
+      floatingActionButton: Platform.isIOS
+          ? Container()
+          : FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () => _openTransactionFormModal(context),
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
