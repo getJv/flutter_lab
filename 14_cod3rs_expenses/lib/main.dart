@@ -119,10 +119,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     bool _isLandscape = mediaQuery.orientation == Orientation.landscape;
 
+    final iconList = Platform.isIOS ? CupertinoIcons.refresh : Icons.list;
+    final chartList =
+        Platform.isIOS ? CupertinoIcons.refresh : Icons.show_chart;
+
     final actions = <Widget>[
       if (_isLandscape)
         _getIconButton(
-          _showChart ? Icons.list : Icons.pie_chart,
+          _showChart ? iconList : chartList,
           () {
             setState(() {
               _showChart = !_showChart;
@@ -155,26 +159,28 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar.preferredSize.height -
         mediaQuery.padding.top;
 
-    final bodyPage = SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          if (_showChart || !_isLandscape)
-            Container(
-              height: availiableHeight * (_isLandscape ? 0.7 : 0.3),
-              child: Chart(
-                recentTransactions: _recentTransactions,
+    final bodyPage = SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            if (_showChart || !_isLandscape)
+              Container(
+                height: availiableHeight * (_isLandscape ? 0.7 : 0.3),
+                child: Chart(
+                  recentTransactions: _recentTransactions,
+                ),
               ),
-            ),
-          if (!_showChart || !_isLandscape)
-            Container(
-              height: availiableHeight * (_isLandscape ? 1 : 0.3),
-              child: TransactionList(
-                transactions: _transactions,
-                onRemove: _deleteTransaction,
+            if (!_showChart || !_isLandscape)
+              Container(
+                height: availiableHeight * (_isLandscape ? 1 : 0.3),
+                child: TransactionList(
+                  transactions: _transactions,
+                  onRemove: _deleteTransaction,
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
 
