@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:meals/utils/app_routes.dart';
 import 'package:meals/views/category_meals.dart';
+import 'package:meals/views/favorites.dart';
+import 'package:meals/views/meal_details.dart';
+import 'package:meals/views/tabs.dart';
 import 'views/categories.dart';
 
 void main() => runApp(MyApp());
@@ -23,8 +26,10 @@ class MyApp extends StatelessWidget {
             ),
       ),
       routes: {
-        AppRoutes.HOME: (ctx) => Categories(),
+        AppRoutes.HOME: (ctx) => Tabs(),
         AppRoutes.CATEGORY_MEALS: (ctx) => CategoryMeals(),
+        AppRoutes.MEAL_DETAILS: (ctx) => MealDetails(),
+        AppRoutes.FAVORITES: (ctx) => Favorites(),
       },
     );
   }
