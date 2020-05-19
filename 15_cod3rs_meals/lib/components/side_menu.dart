@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:meals/utils/app_routes.dart';
 
 class SideMenu extends StatelessWidget {
-  Widget _createItem(IconData icon, String label) {
+  Widget _createItem(IconData icon, String label, Function() action) {
     return ListTile(
       leading: Icon(
         icon,
@@ -15,7 +16,7 @@ class SideMenu extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-      onTap: () {},
+      onTap: action,
     );
   }
 
@@ -41,8 +42,17 @@ class SideMenu extends StatelessWidget {
           SizedBox(
             height: 20,
           ),
-          _createItem(Icons.category, "Categorias"),
-          _createItem(Icons.settings, "Configurações")
+          _createItem(
+            Icons.category,
+            "Categorias",
+            () => Navigator.of(context).pushReplacementNamed(AppRoutes.HOME),
+          ),
+          _createItem(
+            Icons.settings,
+            "Configurações",
+            () =>
+                Navigator.of(context).pushReplacementNamed(AppRoutes.SETTINGS),
+          )
         ],
       ),
     );

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meals/components/side_menu.dart';
+import 'package:meals/models/meal.dart';
 import 'package:meals/views/categories.dart';
 import 'package:meals/views/favorites.dart';
 
 class Tabs extends StatefulWidget {
+  final List<Meal> favoriteMeals;
+
+  const Tabs({Key key, this.favoriteMeals}) : super(key: key);
+
   @override
   _TabsState createState() => _TabsState();
 }
@@ -11,16 +16,24 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> {
   int _selectedViewIndex = 0;
 
-  final List<Map<String, Object>> _views = [
-    {
-      'title': 'Vamos Cozinhas',
-      'view': Categories(),
-    },
-    {
-      'title': 'Meus favoritos',
-      'view': Favorites(),
-    },
-  ];
+  List<Map<String, Object>> _views;
+
+  @override
+  initState() {
+    super.initState();
+    _views = [
+      {
+        'title': 'Vamos Cozinhas',
+        'view': Categories(),
+      },
+      {
+        'title': 'Meus favoritos',
+        'view': Favorites(
+          favoriteMeals: widget.favoriteMeals,
+        ),
+      },
+    ];
+  }
 
   _selectView(int index) {
     setState(() {
